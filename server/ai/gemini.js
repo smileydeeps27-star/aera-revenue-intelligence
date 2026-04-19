@@ -1,7 +1,7 @@
 const https = require('https');
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
-const MODEL = 'gemini-2.0-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 function call(systemPrompt, userMessage, maxTokens = 4096) {
   if (!GEMINI_API_KEY) {
