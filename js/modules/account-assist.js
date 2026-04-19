@@ -33,7 +33,8 @@ RI.AccountAssist = (function () {
           </div>
           <div class="header-actions">
             <button id="btn-save-plan" class="btn btn-primary" disabled>Save plan</button>
-            <button id="btn-generate" class="btn btn-secondary">Regenerate</button>
+            <button id="btn-generate-external" class="btn btn-primary">Generate via Account Plan Generator</button>
+            <button id="btn-generate" class="btn btn-secondary">Regenerate (embedded)</button>
           </div>
         </header>
 
@@ -55,6 +56,45 @@ RI.AccountAssist = (function () {
   function bind(account) {
     document.getElementById('btn-generate').addEventListener('click', () => generate(account));
     document.getElementById('btn-save-plan').addEventListener('click', () => savePlan());
+    document.getElementById('btn-generate-external').addEventListener('click', () => generateExternal(account));
+  }
+
+  function mapIndustry(i) {
+    if (!i) return '';
+    const map = {
+      'CPG': 'CPG / FMCG', 'FMCG': 'CPG / FMCG', 'CPG / FMCG': 'CPG / FMCG',
+      'Manufacturing': 'Manufacturing', 'Retail': 'Retail',
+      'Pharmaceuticals': 'Pharmaceuticals', 'Pharma': 'Pharmaceuticals',
+      'Hi-Tech': 'Hi-Tech', 'Technology': 'Hi-Tech',
+      'Financial Services': 'Financial Services', 'Energy': 'Energy',
+      'Automotive': 'Automotive', 'Chemicals': 'Chemicals',
+      'Healthcare': 'Healthcare', 'Telecommunications': 'Telecommunications',
+      'Aerospace & Defense': 'Aerospace & Defense', 'Aerospace': 'Aerospace & Defense'
+    };
+    return map[i] || '';
+  }
+
+  function mapRevenueBand(n) {
+    if (!n || typeof n !== 'number') return '';
+    if (n >= 50e9) return '$50B+';
+    if (n >= 20e9) return '$20B - $50B';
+    if (n >= 5e9)  return '$5B - $20B';
+    if (n >= 1e9)  return '$1B - $5B';
+    if (n >= 500e6) return '$500M - $1B';
+    return '';
+  }
+
+  function generateExternal(account) {
+    const base = 'https://account-plan-generator-production.up.railway.app/';
+    const params = new URLSearchParams();
+    params.set('company', account.sf_name || '');
+    const ind = mapIndustry(account.sf_industry);
+    if (ind) params.set('industry', ind);
+    const rev = mapRevenueBand(account.sf_annual_revenue);
+    if (rev) params.set('revenue', rev);
+    params.set('autostart', '1');
+    window.open(base + '?' + params.toString(), '_blank', 'noopener');
+    RI.showToast('Opening Account Plan Generator for ' + (account.sf_name || 'account') + '…');
   }
 
   async function generate(account) {
