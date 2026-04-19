@@ -104,15 +104,13 @@ velocity_factor = 0.85 if last 3 activities < 5d apart else (1.25 if > 14d else 
 
 ```
 CEO — Frederic Laluyaux
-  └─ CRO — Andrew Brown
-       ├─ RVP East — Sarah Kim
-       │    ├─ CP — Priya Chen
-       │    └─ CP — Dave Rodriguez
-       ├─ RVP West — Marcus Patel
-       │    ├─ CP — Yuki Tanaka
-       │    └─ CP — Ahmed Al-Fulani
-       ├─ BDR — Alex Singh
-       └─ BDR — Jordan Smith
+  └─ CRO — Gonzalo Benedit
+       ├─ RVP Amer Central — Paul Schmidt
+       ├─ RVP Amer East    — Pete Quimby
+       ├─ RVP Europe       — Jerome Froment Curtil
+       ├─ RVP UK           — Matt York
+       ├─ RVP APAC         — Rajeev Mitroo
+       └─ BDRs — Alex Singh · Jordan Smith · Priya Ravi
 ```
 
 Scope rules:

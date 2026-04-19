@@ -51,7 +51,7 @@ const REGIONS = [
   },
   {
     id: 'emea-north',
-    name: 'EMEA North',
+    name: 'UK',
     rvp_user_id: 'user-rvp-emea-north',
     countries: ['GB', 'IE', 'SE', 'NO', 'DK', 'FI', 'IS'],
     description: 'UK, Ireland, Nordics'
@@ -67,13 +67,13 @@ const REGIONS = [
 
 // --- Hierarchy above the CPs ---
 const CEO = { id: 'user-ceo-01', name: 'Frederic Laluyaux', role: 'ceo', parent_id: null, sf_user_id: '005AXRI0CEO00001' };
-const CRO = { id: 'user-cro-01', name: 'Andrew Brown', role: 'cro', parent_id: 'user-ceo-01', sf_user_id: '005AXRI0CRO00001' };
+const CRO = { id: 'user-cro-01', name: 'Gonzalo Benedit', role: 'cro', parent_id: 'user-ceo-01', sf_user_id: '005AXRI0CRO00001' };
 const RVPS = [
-  { id: 'user-rvp-amer-central', name: 'Jerome Feltracco (RVP Amer Central)', role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00001', territory: 'Amer Central' },
-  { id: 'user-rvp-amer-east',    name: 'Rob Wolfe (RVP Amer East)',           role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00002', territory: 'Amer East' },
-  { id: 'user-rvp-europe',       name: 'Hein Regeer (RVP Europe)',            role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00003', territory: 'Europe' },
-  { id: 'user-rvp-emea-north',   name: 'Matt York (RVP EMEA North)',          role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00004', territory: 'EMEA North' },
-  { id: 'user-rvp-apac',         name: 'Rajeev Mitroo (RVP APAC)',            role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00005', territory: 'APAC' }
+  { id: 'user-rvp-amer-central', name: 'Paul Schmidt (RVP Amer Central)',          role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00001', territory: 'Amer Central' },
+  { id: 'user-rvp-amer-east',    name: 'Pete Quimby (RVP Amer East)',               role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00002', territory: 'Amer East' },
+  { id: 'user-rvp-europe',       name: 'Jerome Froment Curtil (RVP Europe)',        role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00003', territory: 'Europe' },
+  { id: 'user-rvp-emea-north',   name: 'Matt York (RVP UK)',                        role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00004', territory: 'UK' },
+  { id: 'user-rvp-apac',         name: 'Rajeev Mitroo (RVP APAC)',                  role: 'rvp', parent_id: 'user-cro-01', sf_user_id: '005AXRI0RVP00005', territory: 'APAC' }
 ];
 const BDRS = [
   { id: 'user-bdr-01', name: 'Alex Singh', role: 'bdr', parent_id: 'user-cro-01', sf_user_id: '005AXRI0BDR00001' },
