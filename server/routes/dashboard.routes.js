@@ -224,19 +224,33 @@ function buildForecastRisk(opps) {
     .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
     .slice(0, 5);
 }
+// Aera's fiscal year runs Feb → Jan. FY27 = Feb 2026 – Jan 2027, named by its end year.
+const FY_START_MONTH = 1; // 0-indexed: February
+
+function fyShort(fy) { return fy % 100; }
 function quarterOf(date) {
   const d = date instanceof Date ? date : new Date(date);
-  const q = Math.floor(d.getUTCMonth() / 3) + 1;
+  const m = d.getUTCMonth();
   const y = d.getUTCFullYear();
-  return { key: y + '-Q' + q, label: 'Q' + q + ' ' + y, year: y, quarter: q };
+  const fm = (m - FY_START_MONTH + 12) % 12;         // Feb → 0, Jan → 11
+  const fy = m >= FY_START_MONTH ? y + 1 : y;        // Feb 2026 is in FY2027
+  const q = Math.floor(fm / 3) + 1;
+  return { key: 'FY' + fyShort(fy) + '-Q' + q, label: 'Q' + q + ' FY' + fyShort(fy), year: fy, quarter: q };
 }
-function startOfQuarter(y, q) { return new Date(Date.UTC(y, (q - 1) * 3, 1)); }
-function endOfQuarter(y, q) { return new Date(Date.UTC(y, q * 3, 0, 23, 59, 59)); }
-function addQuarters(y, q, n) {
-  let qi = q - 1 + n;
-  const yi = y + Math.floor(qi / 4);
-  qi = ((qi % 4) + 4) % 4;
-  return { year: yi, quarter: qi + 1 };
+function startOfQuarter(fy, q) {
+  const startMonth = FY_START_MONTH + (q - 1) * 3;   // 1, 4, 7, 10 (Feb, May, Aug, Nov)
+  return new Date(Date.UTC(fy - 1, startMonth, 1));
+}
+function endOfQuarter(fy, q) {
+  const startMonth = FY_START_MONTH + (q - 1) * 3;
+  const endMonthIdx = startMonth + 3;                 // first day of the NEXT quarter
+  const endYear = (fy - 1) + Math.floor(endMonthIdx / 12);
+  const endMonth = endMonthIdx % 12;
+  return new Date(Date.UTC(endYear, endMonth, 0, 23, 59, 59)); // day 0 = last day of previous month
+}
+function addQuarters(fy, q, n) {
+  const total = fy * 4 + (q - 1) + n;
+  return { year: Math.floor(total / 4), quarter: (total % 4) + 1 };
 }
 
 function buildQuarterly(opps, opts = {}) {
@@ -244,10 +258,11 @@ function buildQuarterly(opps, opts = {}) {
   const current = quarterOf(now);
 
   function emptyBucket(year, quarter, offset) {
-    const key = year + '-Q' + quarter;
+    // `year` is the fiscal year (FY27 = 2027). Labels show short FYxx form.
+    const key = 'FY' + fyShort(year) + '-Q' + quarter;
     return {
       key,
-      label: 'Q' + quarter + ' ' + year,
+      label: 'Q' + quarter + ' FY' + fyShort(year),
       year, quarter,
       is_current: offset === 0,
       is_past: offset < 0,

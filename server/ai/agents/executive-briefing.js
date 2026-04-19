@@ -20,9 +20,15 @@ function currency(n) {
   return '$' + Math.round(n);
 }
 
+// Aera's fiscal year runs Feb → Jan. FY27 = Feb 2026 – Jan 2027, named by its end year.
 function quarterKey(dateStr) {
   const d = new Date(dateStr);
-  return d.getUTCFullYear() + '-Q' + (Math.floor(d.getUTCMonth() / 3) + 1);
+  const m = d.getUTCMonth();
+  const y = d.getUTCFullYear();
+  const fy = m >= 1 ? y + 1 : y;                    // Feb 2026 is in FY2027
+  const fm = (m - 1 + 12) % 12;
+  const q = Math.floor(fm / 3) + 1;
+  return 'FY' + (fy % 100) + '-Q' + q;
 }
 
 function targetDate(opp) {
