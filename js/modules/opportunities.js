@@ -232,6 +232,8 @@ RI.Opportunities = (function () {
           </div>
         </div>
 
+        ${meetingsHtml(wp)}
+
         <div class="wp-stages">
           ${stages.map(s => {
             const items = byStage[s] || [];
@@ -260,6 +262,97 @@ RI.Opportunities = (function () {
       '</label>' +
       '<button class="wp-remove-action" data-ai-id="' + RI.escapeHTML(ai.id) + '" title="Remove action">×</button>' +
     '</li>';
+  }
+
+  const PRIORITIES = ['low', 'med', 'high'];
+  const TARGET_WINDOWS = [
+    { v: 'this-week', label: 'This week' },
+    { v: '2-weeks',   label: 'Next 2 weeks' },
+    { v: 'this-month',label: 'This month' },
+    { v: 'next-month',label: 'Next month' },
+    { v: 'quarter',   label: 'This quarter' }
+  ];
+
+  function fmtMeetingDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+    const date = d.toLocaleDateString(undefined, opts);
+    const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    return date + ' · ' + time;
+  }
+
+  function meetingsHtml(wp) {
+    const meetings = wp.meetings || { scheduled: [], to_schedule: [] };
+    const scheduled = (meetings.scheduled || []).slice().sort((a, b) => (a.datetime || '').localeCompare(b.datetime || ''));
+    const pending = meetings.to_schedule || [];
+    return `
+      <div class="wp-meetings">
+        <div class="wp-meetings-grid">
+          <div class="wp-meetings-col">
+            <div class="section-head">
+              <span>Scheduled meetings <span class="count-pill">${scheduled.length}</span></span>
+              <button class="btn btn-xs btn-secondary" id="wp-add-meeting">+ Schedule</button>
+            </div>
+            <div class="wp-meetings-list">
+              ${scheduled.length ? scheduled.map(scheduledRowHtml).join('') : '<div class="muted wp-meetings-empty">No meetings on the calendar. Click <em>+ Schedule</em> to add one.</div>'}
+            </div>
+          </div>
+          <div class="wp-meetings-col">
+            <div class="section-head">
+              <span>To be scheduled <span class="count-pill">${pending.length}</span></span>
+              <button class="btn btn-xs btn-secondary" id="wp-add-pending">+ Add</button>
+            </div>
+            <div class="wp-meetings-list">
+              ${pending.length ? pending.map(pendingRowHtml).join('') : '<div class="muted wp-meetings-empty">Nothing in the backlog. Add the next meeting you need to land.</div>'}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function scheduledRowHtml(m) {
+    const when = m.datetime || '';
+    const attendees = Array.isArray(m.attendees) ? m.attendees.join(', ') : (m.attendees || '');
+    const status = m.status || 'confirmed';
+    return '<div class="mtg-row mtg-scheduled" data-mtg-id="' + RI.escapeHTML(m.id) + '">' +
+      '<div class="mtg-left">' +
+        '<input type="datetime-local" class="mtg-datetime" data-mtg-id="' + RI.escapeHTML(m.id) + '" value="' + RI.escapeHTML(when.slice(0, 16)) + '" />' +
+        '<div class="mtg-when-display">' + RI.escapeHTML(fmtMeetingDate(when)) + '</div>' +
+      '</div>' +
+      '<div class="mtg-body">' +
+        '<div class="mtg-title-row">' +
+          '<span class="ap-edit wp-edit mtg-title" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="title" spellcheck="false">' + RI.escapeHTML(m.title || '') + '</span>' +
+          '<select class="mtg-status-select" data-mtg-id="' + RI.escapeHTML(m.id) + '">' +
+            ['confirmed', 'tentative'].map(s => '<option value="' + s + '"' + (s === status ? ' selected' : '') + '>' + s + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+        '<div class="mtg-attendees"><span class="mtg-label">Attendees</span><span class="ap-edit wp-edit mtg-attendees-edit" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="attendees" spellcheck="false">' + RI.escapeHTML(attendees) + '</span></div>' +
+        '<div class="mtg-agenda"><span class="mtg-label">Agenda</span><span class="ap-edit wp-edit mtg-agenda-edit" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="agenda" spellcheck="false">' + RI.escapeHTML(m.agenda || '') + '</span></div>' +
+      '</div>' +
+      '<button class="mtg-remove" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-kind="scheduled" title="Remove">×</button>' +
+    '</div>';
+  }
+
+  function pendingRowHtml(m) {
+    const priority = m.priority || 'med';
+    const proposed = Array.isArray(m.proposed_attendees) ? m.proposed_attendees.join(', ') : (m.proposed_attendees || '');
+    const window = m.target_window || 'this-week';
+    return '<div class="mtg-row mtg-pending prio-' + RI.escapeHTML(priority) + '" data-mtg-id="' + RI.escapeHTML(m.id) + '">' +
+      '<select class="mtg-prio-select" data-mtg-id="' + RI.escapeHTML(m.id) + '">' +
+        PRIORITIES.map(p => '<option value="' + p + '"' + (p === priority ? ' selected' : '') + '>' + p + '</option>').join('') +
+      '</select>' +
+      '<div class="mtg-body">' +
+        '<span class="ap-edit wp-edit mtg-title" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="title" spellcheck="false">' + RI.escapeHTML(m.title || '') + '</span>' +
+        '<div class="mtg-attendees"><span class="mtg-label">Proposed</span><span class="ap-edit wp-edit" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="proposed_attendees" spellcheck="false">' + RI.escapeHTML(proposed) + '</span></div>' +
+        '<div class="mtg-purpose"><span class="mtg-label">Purpose</span><span class="ap-edit wp-edit" contenteditable="true" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-field="purpose" spellcheck="false">' + RI.escapeHTML(m.purpose || '') + '</span></div>' +
+      '</div>' +
+      '<select class="mtg-window-select" data-mtg-id="' + RI.escapeHTML(m.id) + '">' +
+        TARGET_WINDOWS.map(w => '<option value="' + w.v + '"' + (w.v === window ? ' selected' : '') + '>' + w.label + '</option>').join('') +
+      '</select>' +
+      '<button class="mtg-remove" data-mtg-id="' + RI.escapeHTML(m.id) + '" data-mtg-kind="pending" title="Remove">×</button>' +
+    '</div>';
   }
 
   function riskRowHtml(r, i) {
@@ -460,6 +553,13 @@ RI.Opportunities = (function () {
       }
     };
 
+    const findMeeting = (id, kind) => {
+      const wp = detailState.winPlan;
+      if (!wp || !wp.meetings) return null;
+      const list = kind === 'scheduled' ? wp.meetings.scheduled : wp.meetings.to_schedule;
+      return (list || []).find(x => x.id === id);
+    };
+
     document.querySelectorAll('.wp-edit').forEach(el => {
       el.addEventListener('input', () => {
         const wp = detailState.winPlan;
@@ -473,10 +573,113 @@ RI.Opportunities = (function () {
           const idx = Number(el.dataset.riskIdx);
           wp.risks = wp.risks || [];
           if (wp.risks[idx]) wp.risks[idx].text = el.textContent;
+        } else if (el.dataset.mtgId) {
+          const row = el.closest('.mtg-row');
+          const kind = row && row.classList.contains('mtg-scheduled') ? 'scheduled' : 'pending';
+          const mtg = findMeeting(el.dataset.mtgId, kind);
+          if (!mtg) return;
+          const field = el.dataset.mtgField;
+          if (field === 'attendees' || field === 'proposed_attendees') {
+            mtg[field] = el.textContent.split(',').map(s => s.trim()).filter(Boolean);
+          } else {
+            mtg[field] = el.textContent;
+          }
         }
         markWpDirty();
       });
     });
+
+    document.querySelectorAll('.mtg-datetime').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const mtg = findMeeting(inp.dataset.mtgId, 'scheduled');
+        if (!mtg) return;
+        mtg.datetime = inp.value;
+        const display = inp.closest('.mtg-left').querySelector('.mtg-when-display');
+        if (display) display.textContent = fmtMeetingDate(mtg.datetime);
+        markWpDirty();
+      });
+    });
+
+    document.querySelectorAll('.mtg-status-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const mtg = findMeeting(sel.dataset.mtgId, 'scheduled');
+        if (mtg) { mtg.status = sel.value; markWpDirty(); }
+      });
+    });
+
+    document.querySelectorAll('.mtg-prio-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const mtg = findMeeting(sel.dataset.mtgId, 'pending');
+        if (mtg) {
+          mtg.priority = sel.value;
+          const row = sel.closest('.mtg-row');
+          if (row) { row.classList.remove('prio-low', 'prio-med', 'prio-high'); row.classList.add('prio-' + sel.value); }
+          markWpDirty();
+        }
+      });
+    });
+
+    document.querySelectorAll('.mtg-window-select').forEach(sel => {
+      sel.addEventListener('change', () => {
+        const mtg = findMeeting(sel.dataset.mtgId, 'pending');
+        if (mtg) { mtg.target_window = sel.value; markWpDirty(); }
+      });
+    });
+
+    document.querySelectorAll('.mtg-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const wp = detailState.winPlan;
+        if (!wp || !wp.meetings) return;
+        const kind = btn.dataset.mtgKind;
+        const key = kind === 'scheduled' ? 'scheduled' : 'to_schedule';
+        wp.meetings[key] = (wp.meetings[key] || []).filter(m => m.id !== btn.dataset.mtgId);
+        markWpDirty();
+        rerenderWinPlan();
+      });
+    });
+
+    const addMtgBtn = document.getElementById('wp-add-meeting');
+    addMtgBtn && addMtgBtn.addEventListener('click', () => {
+      const wp = detailState.winPlan;
+      if (!wp) return;
+      wp.meetings = wp.meetings || { scheduled: [], to_schedule: [] };
+      wp.meetings.scheduled = wp.meetings.scheduled || [];
+      const d = new Date(); d.setDate(d.getDate() + 2); d.setHours(10, 0, 0, 0);
+      wp.meetings.scheduled.push({
+        id: 'mtg-' + Date.now().toString(36) + Math.floor(Math.random() * 1000).toString(36),
+        title: 'New meeting',
+        datetime: d.toISOString().slice(0, 16),
+        duration_min: 30,
+        attendees: [],
+        agenda: '',
+        status: 'tentative'
+      });
+      markWpDirty();
+      rerenderWinPlan();
+    });
+
+    const addPendingBtn = document.getElementById('wp-add-pending');
+    addPendingBtn && addPendingBtn.addEventListener('click', () => {
+      const wp = detailState.winPlan;
+      if (!wp) return;
+      wp.meetings = wp.meetings || { scheduled: [], to_schedule: [] };
+      wp.meetings.to_schedule = wp.meetings.to_schedule || [];
+      wp.meetings.to_schedule.push({
+        id: 'pend-' + Date.now().toString(36) + Math.floor(Math.random() * 1000).toString(36),
+        title: 'New meeting to schedule',
+        purpose: '',
+        proposed_attendees: [],
+        priority: 'med',
+        target_window: 'this-week'
+      });
+      markWpDirty();
+      rerenderWinPlan();
+    });
+
+    function rerenderWinPlan() {
+      const pane = document.querySelector('.page-opp-detail .plan-pane[data-pane="winplan"]');
+      if (pane) { pane.innerHTML = winPlanHtml(detailState.winPlan); bindDetail(); activateTab('winplan'); }
+    }
 
     document.querySelectorAll('.risk-sev-select').forEach(sel => {
       sel.addEventListener('change', () => {

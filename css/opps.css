@@ -199,6 +199,183 @@
 
 .wp-empty-stage { font-size: 11px; padding: 6px 2px; }
 
+/* Meetings section */
+.wp-meetings { margin: 16px 0 4px; }
+.wp-meetings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.wp-meetings-col {
+  background: var(--surface-2);
+  border-radius: var(--radius-m);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+}
+.wp-meetings-col .section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+.count-pill {
+  display: inline-block;
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.wp-meetings-list { display: flex; flex-direction: column; gap: 8px; }
+.wp-meetings-empty { font-size: 12px; font-style: italic; padding: 12px 4px; }
+
+.mtg-row {
+  background: var(--surface);
+  border-radius: var(--radius-s);
+  padding: 10px 12px;
+  border-left: 3px solid var(--border);
+  display: grid;
+  gap: 10px;
+}
+.mtg-row:hover { border-color: var(--border); }
+
+.mtg-scheduled {
+  grid-template-columns: 140px 1fr auto;
+  align-items: start;
+}
+.mtg-left { display: flex; flex-direction: column; gap: 4px; }
+.mtg-datetime {
+  font-size: 11px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+  color: var(--text-2);
+  width: 100%;
+  box-sizing: border-box;
+}
+.mtg-when-display {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+.mtg-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mtg-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.mtg-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  flex: 1;
+}
+.mtg-status-select {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+}
+.mtg-row[data-mtg-id] .mtg-status-select option { text-transform: uppercase; }
+.mtg-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  margin-right: 6px;
+  font-weight: 600;
+}
+.mtg-attendees, .mtg-agenda, .mtg-purpose {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.mtg-pending {
+  grid-template-columns: 60px 1fr 120px auto;
+  align-items: start;
+}
+.mtg-prio-select, .mtg-window-select {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+}
+.mtg-pending.prio-high { border-left-color: var(--danger); }
+.mtg-pending.prio-med  { border-left-color: var(--warning); }
+.mtg-pending.prio-low  { border-left-color: var(--success); }
+.mtg-pending.prio-high .mtg-prio-select { background: var(--danger-soft); color: var(--danger); }
+.mtg-pending.prio-med  .mtg-prio-select { background: var(--warning-soft); color: var(--warning); }
+.mtg-pending.prio-low  .mtg-prio-select { background: var(--success-soft); color: var(--success); }
+
+.mtg-scheduled { border-left-color: var(--primary); }
+
+.mtg-remove {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: 0.12s;
+  align-self: start;
+}
+.mtg-row:hover .mtg-remove { opacity: 1; }
+.mtg-remove:hover { background: var(--danger-soft); color: var(--danger); }
+
+@media (max-width: 1100px) {
+  .wp-meetings-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .mtg-scheduled,
+  .mtg-pending {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .mtg-scheduled .mtg-left {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .mtg-scheduled .mtg-datetime { max-width: 180px; }
+  .mtg-scheduled .mtg-body { grid-column: 1 / 2; }
+  .mtg-scheduled .mtg-remove { grid-column: 2 / 3; grid-row: 2 / 3; }
+  .mtg-pending .mtg-prio-select,
+  .mtg-pending .mtg-window-select {
+    grid-column: auto;
+  }
+  .mtg-pending .mtg-body { grid-column: 1 / -1; }
+  .mtg-pending .mtg-remove { grid-column: 2 / 3; grid-row: 1 / 2; }
+}
+
 /* Notes tab */
 .notes-head { display: flex; justify-content: space-between; align-items: center; }
 .notes-head-actions { display: flex; gap: 8px; align-items: center; }

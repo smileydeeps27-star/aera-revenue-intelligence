@@ -120,6 +120,98 @@ function daysAgo(n) {
 
 function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
+function buildMeetingsForStage(oppId, stage, acc) {
+  const SEED_NOW = new Date('2026-04-17T12:00:00Z');
+  const daysFromNow = (n, hour = 10, minute = 0) => {
+    const d = new Date(SEED_NOW);
+    d.setDate(d.getDate() + n);
+    d.setHours(hour, minute, 0, 0);
+    return d.toISOString().slice(0, 16);
+  };
+  const company = (acc && acc.sf_name) ? acc.sf_name : 'Account';
+  const scheduled = [];
+  const toSchedule = [];
+
+  if (stage === 'discovery') {
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s1', title: 'Discovery workshop — ' + company + ' Supply Chain team',
+      datetime: daysFromNow(3, 10, 0), duration_min: 60,
+      attendees: ['VP Demand Planning (Champion)', 'Aera CP', 'Aera Solution Architect'],
+      agenda: 'Pain discovery, current-state demand + S&OP, quantify baseline', status: 'confirmed'
+    });
+    toSchedule.push({
+      id: 'pend-' + oppId + '-p1', title: 'Economic buyer intro — CSCO',
+      purpose: 'Secure economic buyer sponsorship + budget ownership conversation',
+      proposed_attendees: ['CSCO', 'Aera CP'], priority: 'high', target_window: '2-weeks'
+    });
+  } else if (stage === 'validation') {
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s1', title: 'Success criteria review with champion',
+      datetime: daysFromNow(2, 14, 30), duration_min: 45,
+      attendees: ['Champion - VP Demand Planning', 'Aera CP'],
+      agenda: 'Lock in success metrics, POC scope, acceptance criteria', status: 'confirmed'
+    });
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s2', title: 'Technical deep-dive with IT',
+      datetime: daysFromNow(6, 11, 0), duration_min: 60,
+      attendees: ['VP Data & Analytics', 'IT Architect', 'Aera SA'],
+      agenda: 'Data integration, security, rollout approach', status: 'tentative'
+    });
+    toSchedule.push({
+      id: 'pend-' + oppId + '-p1', title: 'Executive briefing — CFO alignment',
+      purpose: 'Bring in CFO to validate ROI model before proposal stage',
+      proposed_attendees: ['CFO', 'CSCO', 'Aera CRO'], priority: 'high', target_window: 'this-week'
+    });
+  } else if (stage === 'proposal') {
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s1', title: 'Value model readout',
+      datetime: daysFromNow(1, 9, 0), duration_min: 60,
+      attendees: ['CSCO', 'CFO', 'VP Demand Planning', 'Aera CP', 'Aera CRO'],
+      agenda: 'Walk through ROI model, phased value capture, risk-adjusted case', status: 'confirmed'
+    });
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s2', title: 'Procurement kickoff',
+      datetime: daysFromNow(5, 15, 0), duration_min: 30,
+      attendees: ['Procurement Lead', 'Aera CP'],
+      agenda: 'Paper process, required docs, typical cycle times', status: 'tentative'
+    });
+    toSchedule.push({
+      id: 'pend-' + oppId + '-p1', title: 'Reference call with similar industry customer',
+      purpose: 'Build conviction on outcomes before signature',
+      proposed_attendees: ['CSCO', 'VP Demand Planning', 'Reference customer CSCO'],
+      priority: 'med', target_window: '2-weeks'
+    });
+  } else if (stage === 'negotiation') {
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s1', title: 'Legal redline walkthrough',
+      datetime: daysFromNow(1, 13, 0), duration_min: 45,
+      attendees: ['Legal - ' + company, 'Aera Legal', 'Aera CP'],
+      agenda: 'Walk MSA + DPA redlines, identify blockers', status: 'confirmed'
+    });
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s2', title: 'Executive close call',
+      datetime: daysFromNow(4, 16, 0), duration_min: 30,
+      attendees: ['CSCO', 'Aera CRO'],
+      agenda: 'Final terms + close date alignment', status: 'confirmed'
+    });
+    toSchedule.push({
+      id: 'pend-' + oppId + '-p1', title: 'Post-signature kickoff with implementation',
+      purpose: 'Line up onboarding + first 30-day success milestones',
+      proposed_attendees: ['VP Demand Planning', 'Aera Implementation Lead', 'Aera CS'],
+      priority: 'med', target_window: 'next-month'
+    });
+  } else if (stage === 'closed_won') {
+    scheduled.push({
+      id: 'mtg-' + oppId + '-s1', title: 'Kickoff + success plan review',
+      datetime: daysFromNow(2, 10, 0), duration_min: 60,
+      attendees: ['VP Demand Planning', 'IT Architect', 'Aera CS', 'Aera Implementation'],
+      agenda: 'Align on go-live plan, milestones, success metrics', status: 'confirmed'
+    });
+  }
+
+  return { scheduled, to_schedule: toSchedule };
+}
+
 const ACTIVITY_KINDS = ['content_view', 'event_attend', 'email_sent', 'email_reply', 'bdr_call', 'meeting'];
 const WARMUP_BY_FIRE = (score) => score >= 80 ? 'qualified' : score >= 55 ? 'engaged' : score >= 30 ? 'prospecting' : 'dormant';
 const INTERNAL_STAGES = ['discovery', 'validation', 'proposal', 'negotiation'];
@@ -467,7 +559,8 @@ function generate({ fire, medpicss }) {
         stage === 'validation' ? 'Lock in success criteria with champion' :
         stage === 'proposal' ? 'Pull ROI readout forward' :
         stage === 'negotiation' ? 'Close legal redlines this week' :
-        'Onboarding kickoff'
+        'Onboarding kickoff',
+      meetings: buildMeetingsForStage(oppId, stage, acc)
     });
 
     oppEnrichment.push({
