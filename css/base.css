@@ -1,0 +1,82 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #f1f3f7;
+  --border: #e4e7ed;
+  --border-strong: #c9cfd9;
+  --text: #14171d;
+  --text-2: #4a5264;
+  --text-3: #7a8396;
+  --primary: #2b5fff;
+  --primary-hover: #1f4de0;
+  --primary-soft: #eaf0ff;
+  --success: #1b9b64;
+  --success-soft: #e6f4ec;
+  --warning: #c77a00;
+  --warning-soft: #fdf2de;
+  --danger: #c73a3a;
+  --danger-soft: #fbe9e9;
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.08);
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; }
+h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 18px; font-weight: 600; }
+h3 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+
+main {
+  padding: 24px 32px 64px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-sub { color: var(--text-3); font-size: 13px; margin-top: 4px; }
+
+.link-back {
+  display: inline-block;
+  color: var(--text-3);
+  font-size: 12px;
+  margin-bottom: 8px;
+  transition: color 0.15s;
+}
+.link-back:hover { color: var(--primary); }
+
+.loading, .muted { color: var(--text-3); padding: 16px 0; }
+.error-state { color: var(--danger); padding: 24px; background: var(--danger-soft); border-radius: var(--radius-m); }
+
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--text-3);
+}
+.empty-icon {
+  font-size: 48px;
+  opacity: 0.35;
+  margin-bottom: 16px;
+}
+.empty-title { font-size: 16px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+.empty-sub { font-size: 13px; }

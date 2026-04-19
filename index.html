@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aera — Revenue Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/topbar.css">
+<link rel="stylesheet" href="css/warmup.css">
+<link rel="stylesheet" href="css/account-plan.css">
+<link rel="stylesheet" href="css/opps.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/market-intel.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand">
+        <div class="brand-mark">Ri</div>
+        <div class="brand-text">
+          <div class="brand-name">Revenue Intelligence</div>
+          <div class="brand-sub">Aera Technology · Internal</div>
+        </div>
+      </div>
+      <nav class="tabs" id="tabs">
+        <a href="#/dashboard" data-tab="dashboard">Dashboard</a>
+        <a href="#/market-intel" data-tab="market-intel">Market Intel</a>
+        <a href="#/warmup" data-tab="warmup">Warm-up</a>
+        <a href="#/opps" data-tab="opps">Opportunities</a>
+        <a href="#/leads" data-tab="leads">Leads</a>
+        <a href="#/territory" data-tab="territory">Territory</a>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <div class="role-switcher" id="role-switcher">
+        <span class="role-label">View as</span>
+        <select id="role-select"></select>
+        <select id="user-select"></select>
+      </div>
+      <div class="ai-mode" id="ai-mode">
+        <span class="dot" id="ai-dot"></span>
+        <span id="ai-mode-label">Demo</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="view"></main>
+
+  <div class="toast-container" id="toasts"></div>
+
+<script src="js/core/utils.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/role.js"></script>
+<script src="js/core/router.js"></script>
+<script src="js/modules/dashboard.js"></script>
+<script src="js/modules/warmup.js"></script>
+<script src="js/modules/warmup-detail.js"></script>
+<script src="js/modules/account-assist.js"></script>
+<script src="js/modules/opportunities.js"></script>
+<script src="js/modules/market-intel.js"></script>
+<script src="js/modules/leads.js"></script>
+<script src="js/modules/territory.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "revenue-intelligence-platform",
+  "version": "0.1.0",
+  "description": "Aera Revenue Intelligence — end-to-end Marketing → Account Plans → Warm-up → Opportunities → Win Plans → Dashboards",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed/load-seed.js",
+    "test": "node seed/tests/engines.test.js && node seed/tests/idempotency.test.js && node seed/tests/sfdc-seam.test.js",
+    "test:engines": "node seed/tests/engines.test.js",
+    "test:idempotency": "node seed/tests/idempotency.test.js",
+    "test:sfdc": "node seed/tests/sfdc-seam.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
